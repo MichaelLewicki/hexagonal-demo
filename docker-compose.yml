@@ -1,0 +1,29 @@
+version: "3.7"
+services:
+  db:
+    image: mysql:8
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: clave123
+      MYSQL_DATABASE: hexagonal-demo
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: clave123
+      TZ: America/Santiago
+    volumes:
+      - ./datadir:/var/lib/mysql
+  api:
+    build: .
+    ports:
+      - 8080:8080
+    expose:
+      - 8080
+    depends_on:
+      - db
+    environment:
+      - DATASOURCES_DEFAULT_URL=jdbc:mysql://db:3306/hexagonal-demo?autoReconnect=true&useSSL=false
+      - DATASOURCES_DEFAULT_USERNAME=root
+      - DATASOURCES_DEFAULT_PASSWORD=clave123
+      - JPA_DEFAULT_HIBERNATE_HBM2DDL_AUTO= update
